@@ -1,6 +1,6 @@
 #-----------------------------------------------------------------------------#
 # OFAC Lists: Monthly Download
-# Last updated 2022-04-29
+# Last updated 2022-04-30
 #-----------------------------------------------------------------------------#
 
 library(magrittr)
@@ -46,10 +46,11 @@ summary(sdn_alt)
 summary(sdn_comments)
 
 # Join
+## Many-to-many: Cartesian product
 sdn_df <- sdn %>% 
-  dplyr::full_join(sdn_add) %>% 
-  dplyr::full_join(sdn_alt) %>% 
-  dplyr::full_join(sdn_comments) %>% 
+  dplyr::left_join(sdn_add) %>% 
+  dplyr::left_join(sdn_alt) %>% 
+  dplyr::left_join(sdn_comments) %>% 
   dplyr::mutate(Program_cat = "SDN")
 
 rm(sdn, sdn_add, sdn_alt, sdn_comments)
@@ -77,10 +78,11 @@ summary(cons_alt)
 summary(cons_comments)
 
 # Join
+## Many-to-many: Cartesian product
 cons_df <- cons %>% 
-  dplyr::full_join(cons_add) %>% 
-  dplyr::full_join(cons_alt) %>% 
-  dplyr::full_join(cons_comments) %>% 
+  dplyr::left_join(cons_add) %>% 
+  dplyr::left_join(cons_alt) %>% 
+  dplyr::left_join(cons_comments) %>% 
   dplyr::mutate(Program_cat = "NSDN")
 
 rm(cons, cons_add, cons_alt, cons_comments)
@@ -88,26 +90,34 @@ rm(cons, cons_add, cons_alt, cons_comments)
 
 # OFAC --------------------------------------------------------------------
 
-ofac_df <- rbind(sdn_df, cons_df)
+ofac_full <- rbind(sdn_df, cons_df)
 
-ofac_df$Date <- Sys.Date()
+ofac_full$Rep_date <- Sys.Date()
 
 # Save full ofac lists file
-save(ofac_df, file = paste0("data/ofac_full_", Sys.Date(), ".RData"))
+save(ofac_full, file = paste0("data/ofac_full_", Sys.Date(), ".RData"))
 
-# Save more minimal file focusing on locations and programs
-ofac_loc <- ofac_df %>% 
-  dplyr::select(Ent_num, SDN_name, SDN_type, Program, 
-                Country, Program_cat, Date) %>% 
+# Narrower file; Uniqueness: Ent_num, program, country 
+## Note that there can be multiple addresses/localities per country; thus, avoiding
+ofac_prog_loc <- ofac_full %>% 
+  dplyr::select(Ent_num, SDN_name, SDN_type, 
+                Program, Program_cat, Country, Rep_date) %>% 
+  dplyr::distinct()
+
+saveRDS(ofac_prog_loc, paste0("data/ofac_prog_loc_", Sys.Date(), ".rds"))
+
+# Narrower file; Uniqueness: Ent_num, country
+## Entities can be on different lists
+ofac_loc <- ofac_full %>% 
+  dplyr::select(Ent_num, SDN_name, SDN_type, Country, Rep_date) %>% 
   dplyr::distinct()
 
 saveRDS(ofac_loc, paste0("data/ofac_loc_", Sys.Date(), ".rds"))
 
-# Save aggregated file
+# Aggregated count file
 ofac_agg <- ofac_loc %>% 
-  dplyr::group_by(Program_cat, Country) %>% 
+  dplyr::group_by(Country, Rep_date) %>% 
   dplyr::summarize(Count = dplyr::n(), .groups = "drop") %>% 
-  dplyr::ungroup() %>% 
-  dplyr::mutate(Date = Sys.Date())
+  dplyr::ungroup()
 
 saveRDS(ofac_agg, paste0("data/ofac_agg_", Sys.Date(), ".rds"))
