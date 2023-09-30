@@ -1,6 +1,6 @@
 #-----------------------------------------------------------------------------#
 # OFAC Lists: Monthly Download
-# Last updated 2023-08-31
+# Last updated 2023-09-30
 #-----------------------------------------------------------------------------#
 
 library(magrittr)
@@ -27,29 +27,42 @@ comments.names <- c("Ent_num", "Remarks_cont")
 # SDN ---------------------------------------------------------------------
 
 # Import
-sdn <- read.csv("data-raw/sdall/sdn.csv", header = FALSE)
-sdn_add <- read.csv("data-raw/sdall/add.csv", header = FALSE)
-sdn_alt <- read.csv("data-raw/sdall/alt.csv", header = FALSE)
-sdn_comments <- read.csv("data-raw/sdall/sdn_comments.csv", header = FALSE)
+sdn <- read.csv(
+  "https://www.treasury.gov/ofac/downloads/sdn.csv", 
+  header = FALSE, col.names = main.names) %>% 
+  # remove placeholder line at end of each file
+  dplyr::filter(SDN_name != "") %>%  
+  dplyr::mutate(Ent_num = as.integer(Ent_num))
 
-# Apply var names
-colnames(sdn) <- main.names
-colnames(sdn_add) <- add.names
-colnames(sdn_alt) <- alt.names
-colnames(sdn_comments) <- comments.names
+sdn_add <- read.csv(
+  "https://www.treasury.gov/ofac/downloads/add.csv", 
+  header = FALSE, col.names = add.names) %>% 
+  dplyr::filter(Address != "") %>%  
+  dplyr::mutate(Ent_num = as.integer(Ent_num))
 
-# Check summary
-## Is Ent_num an integer? Sometimes there are special characters
-summary(sdn)
-summary(sdn_add)
-summary(sdn_alt)
-summary(sdn_comments)
+sdn_alt <- read.csv(
+  "https://www.treasury.gov/ofac/downloads/alt.csv", 
+  header = FALSE, col.names = alt.names) %>% 
+  dplyr::filter(Alt_name != "") %>%  
+  dplyr::mutate(Ent_num = as.integer(Ent_num))
+
+sdn_comments <- 
+  read.csv("https://www.treasury.gov/ofac/downloads/sdn_comments.csv", 
+           header = FALSE, col.names = comments.names) %>% 
+  dplyr::filter(Remarks_cont != "") %>%  
+  dplyr::mutate(Ent_num = as.integer(Ent_num))
+
+# Check for Ent_num NAs
+sum(is.na(sdn$Ent_num))
+sum(is.na(sdn_add$Ent_num))
+sum(is.na(sdn_alt$Ent_num))
+sum(is.na(sdn_comments$Ent_num))
 
 # Join
 ## Many-to-many: Cartesian product
 sdn_df <- sdn %>% 
   dplyr::left_join(sdn_add) %>% 
-  dplyr::left_join(sdn_alt) %>% 
+  dplyr::left_join(sdn_alt, relationship = "many-to-many") %>% 
   dplyr::left_join(sdn_comments) %>% 
   dplyr::mutate(Program_cat = "SDN")
 
@@ -59,29 +72,42 @@ rm(sdn, sdn_add, sdn_alt, sdn_comments)
 # Non-SDN -----------------------------------------------------------------
 
 # Import
-cons <- read.csv("data-raw/consall/cons_prim.csv", header = FALSE)
-cons_add <- read.csv("data-raw/consall/cons_add.csv", header = FALSE)
-cons_alt <- read.csv("data-raw/consall/cons_alt.csv", header = FALSE)
-cons_comments <- read.csv("data-raw/consall/cons_comments.csv", header = FALSE)
+cons <- read.csv(
+  "https://www.treasury.gov/ofac/downloads/consolidated/cons_prim.csv", 
+  header = FALSE, col.names = main.names) %>% 
+  # remove placeholder line at end of each file
+  dplyr::filter(SDN_name != "") %>%  
+  dplyr::mutate(Ent_num = as.integer(Ent_num))
 
-# Apply var names
-colnames(cons) <- main.names
-colnames(cons_add) <- add.names
-colnames(cons_alt) <- alt.names
-colnames(cons_comments) <- comments.names
+cons_add <- read.csv(
+  "https://www.treasury.gov/ofac/downloads/consolidated/cons_add.csv", 
+  header = FALSE, col.names = add.names) %>% 
+  dplyr::filter(Address != "") %>%  
+  dplyr::mutate(Ent_num = as.integer(Ent_num))
 
-# Check summary
-## Is Ent_num an integer? Sometimes there are special characters
-summary(cons)
-summary(cons_add)
-summary(cons_alt)
-summary(cons_comments)
+cons_alt <- read.csv(
+  "https://www.treasury.gov/ofac/downloads/consolidated/cons_alt.csv", 
+  header = FALSE, col.names = alt.names) %>% 
+  dplyr::filter(Alt_name != "") %>%  
+  dplyr::mutate(Ent_num = as.integer(Ent_num))
+
+cons_comments <- read.csv(
+  "https://www.treasury.gov/ofac/downloads/consolidated/cons_comments.csv", 
+  header = FALSE, col.names = comments.names) %>% 
+  dplyr::filter(Remarks_cont != "") %>%  
+  dplyr::mutate(Ent_num = as.integer(Ent_num))
+
+# Check for Ent_num NAs
+sum(is.na(cons$Ent_num))
+sum(is.na(cons_add$Ent_num))
+sum(is.na(cons_alt$Ent_num))
+sum(is.na(cons_comments$Ent_num))
 
 # Join
 ## Many-to-many: Cartesian product
 cons_df <- cons %>% 
   dplyr::left_join(cons_add) %>% 
-  dplyr::left_join(cons_alt) %>% 
+  dplyr::left_join(cons_alt, relationship = "many-to-many") %>% 
   dplyr::left_join(cons_comments) %>% 
   dplyr::mutate(Program_cat = "NSDN")
 
