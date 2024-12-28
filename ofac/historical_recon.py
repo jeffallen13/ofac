@@ -45,9 +45,6 @@ def reconcile_historical_data(data_dir='data'):
     # Clean up intermediate columns
     unique_data = unique_data.drop(['last_date'], axis=1)
 
-    # Save master file
-    unique_data.to_csv(os.path.join(data_dir, 'ofac_master.csv'), index=False)
-
     return unique_data
 
 def create_panel(data):
@@ -90,8 +87,9 @@ def create_panel(data):
 
     # Create additions column
     first_date = dates_df['Date'].min()
-    panel['additions'] = np.where(panel['Date'] == first_date, 
-                                0, panel['entity_counts']).astype('int32')
+    panel['additions'] = np.where(
+        panel['Date'] == first_date, 0, panel['entity_counts']
+    ).astype('int32')
 
     # Count and merge removals using removal_date
     removals = (base_records[base_records['removal_date'].notna()]
@@ -109,8 +107,8 @@ def create_panel(data):
     # Calculate changes and levels
     panel['change'] = (panel['additions'] - panel['removals']).astype('int32')
     panel['temp_col'] = np.where(panel['Date'] == first_date, 
-                                panel['entity_counts'], 
-                                panel['change']).astype('int32')
+                                 panel['entity_counts'], 
+                                 panel['change']).astype('int32')
     panel['levels'] = panel.groupby('Country')['temp_col'].cumsum().astype('int32')
 
     # Add date components and clean up
@@ -120,4 +118,7 @@ def create_panel(data):
 
     cols = ['Country', 'Date', 'yrqtr', 'yrmon', 'levels', 
             'additions', 'removals', 'change']
-    return panel[cols].sort_values(['Country', 'Date'])
+    
+    panel = panel[cols].sort_values(['Country', 'Date']).reset_index(drop=True)
+
+    return panel

@@ -10,6 +10,4 @@ df.to_csv('data/ofac_list.csv', index=False)
 
 panel = create_panel(df)
 
-russia = panel[panel['Country'] == 'Russia']
-
-china = panel[panel['Country'] == 'China']
+panel.to_csv('data/ofac_panel.csv', index=False)
