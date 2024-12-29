@@ -22,6 +22,8 @@ The system handles three key tasks:
 
 ## Data Outputs
 
+The system produces two datasets, which ship in the `data/` folder. Researchers who are only interested in the datasets can simply download them for further use. 
+
 ### OFAC List (ofac_list.csv)
 Record of sanctioned entities with temporal tracking. All dates are end-of-month. Key temporal fields: 
 - Rep_date: Month-end date when information was observed/reported beginning in April 2022
