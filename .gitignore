@@ -1,14 +1,3 @@
 *__pycache__/
-.Rproj.user
-.Rhistory
-.RData
-.Ruserdata
-ofac.Rproj
-consall/
-sdall/
-test/
-*ofac_agg_*
 *ofac_full_*
-*ofac_loc_*
-*ofac_prog_*
 ofac-env/
