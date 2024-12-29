@@ -1,8 +1,13 @@
-import pandas as pd
-import numpy as np
 import os
 from datetime import datetime
-from typing import Optional
+# from typing import Optional
+
+import pandas as pd
+import numpy as np
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+from matplotlib.dates import DateFormatter
 
 class OFACProcessor:
     """A processor for OFAC sanctions list data.
@@ -348,3 +353,66 @@ class OFACProcessor:
         )
 
         return panel
+
+# Plotting utilities ----------------------------------------------------
+
+def plot_ofac_series(df: pd.DataFrame, country: str, var: str = 'levels'):
+    """
+    Plot a monthly time series for the number or change in the number of 
+    entities on the OFAC sanctions lists for a given country. 
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        An OFAC panel
+    country : str
+        The country to plot
+    var : str, optional
+        The plotting variable, must be either 'levels' or 'change', 
+        by default 'levels'
+
+    """
+
+    valid_countries = list(df['Country'].drop_duplicates())
+
+    if country not in valid_countries:
+        raise ValueError(
+            f"'country' must be one of: {', '.join(valid_countries)}"
+        )
+    
+    valid_vars = ['levels', 'change']
+
+    if var not in valid_vars:
+        raise ValueError(f"'var' must be either 'levels' or 'change'")
+
+    # Title formatting
+    title_common = f'of entities on OFAC lists ({country})'
+
+    if var == 'levels':
+        title_prefix = 'Number '
+    elif var == 'change':
+        title_prefix = 'Change in number '
+    
+    title = title_prefix + title_common
+    
+    fig, ax = plt.subplots(figsize=(6.5, 3.5))
+
+    sns.lineplot(data=df[df['Country'] == country], x='Date', y=var, ax=ax)
+
+    # Format date ticks
+    ax.xaxis.set_major_formatter(DateFormatter("%m/%y"))
+
+    # Format title and labels
+    ax.set_title(title)
+    ax.set_ylabel('')
+    ax.set_xlabel('Monthly')
+
+    ax.tick_params(axis='both', direction='in', right=True)
+
+    # Source
+    source = 'Source: U.S. Treasury, Office of Foreign Assets Control'
+    
+    ax.text(
+        0, -0.18, source, transform=ax.transAxes, 
+        ha='left', va='top', fontsize=9
+    )
