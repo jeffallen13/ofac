@@ -18,9 +18,12 @@ ofac_panel.to_csv('data/ofac_panel.csv', index=False)
 
 from ofac import plot_ofac_series
 import pandas as pd
+import matplotlib.pyplot as plt
 
 ofac_panel = pd.read_csv('data/ofac_panel.csv', parse_dates=['Date'])
 
 plot_ofac_series(ofac_panel, country='Russia', var='levels')
+
+plt.savefig('images/ofac_russia_levels.png', bbox_inches='tight')
 
 
