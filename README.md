@@ -47,7 +47,8 @@ Monthly panel of sanctions by country with the following fields:
 
 ## Usage
 
-Basic usage:
+### Data
+
 ```python
 from ofac import OFACProcessor
 
@@ -60,14 +61,17 @@ ofac_list = processor.update_ofac_list()
 # Create panel dataset
 panel = processor.create_panel(ofac_list)
 ```
+### Visualiation
 
-The system also includes basic functionality to create time series plots for a given country: 
+The system also includes functionality to create time series plots for a given country: 
 
 ```python
 from ofac import plot_ofac_series
 
 plot_ofac_series(panel, country='Russia', var='levels')
 ```
+
+Finally, users can run the Dash application `app.py` to explore the panel interactively: 
 
 ## License
 MIT License
