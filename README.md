@@ -70,6 +70,7 @@ from ofac import plot_ofac_series
 
 plot_ofac_series(panel, country='Russia', var='levels')
 ```
+![Line Plot](images/ofac_russia_levels.png)
 
 Finally, users can run the Dash application `app.py` to explore the panel interactively: 
 
