@@ -58,7 +58,9 @@ plot_ofac_series(panel, country='Russia', var='levels')
 ```
 ![Line Plot](images/ofac_russia_levels.png)
 
-Finally, users can run the Dash application `app.py` to explore the panel interactively.
+Finally, users can run the Dash application `app.py` to explore the panel interactively:
+
+![Dash Plot](images/ofac_ts_explorer.png)
 
 ## System Details
 
