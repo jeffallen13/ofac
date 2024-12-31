@@ -1,4 +1,4 @@
-# OFAC Sanctions List Processor
+# OFAC Sanctions List and Monthly Panel Data
 
 A Python system for managing OFAC sanctions data on a monthly basis. The system is particularly suited for research applications, providing historical tracking of sanctions and a monthly panel dataset for analysis. It is not designed for sanctions screening. 
 
