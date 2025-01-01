@@ -1,5 +1,6 @@
 '''
 Downloads and processes OFAC sanctions data at the end of each month
+Last updated: 12/31/2024
 '''
 
 from ofac import OFACProcessor
@@ -25,5 +26,3 @@ ofac_panel = pd.read_csv('data/ofac_panel.csv', parse_dates=['Date'])
 plot_ofac_series(ofac_panel, country='Russia', var='levels')
 
 plt.savefig('images/ofac_russia_levels.png', bbox_inches='tight')
-
-
