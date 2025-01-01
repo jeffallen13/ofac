@@ -20,7 +20,12 @@ def update_graph(selected_country):
     dff = df[df.Country==selected_country]
     fig = px.line(dff, x='Date', y='levels')
     fig.update_layout(
-        title=f'Number of entities on OFAC lists ({selected_country})',
+        title={
+            'text': f'Number of entities on OFAC lists ({selected_country})',
+            'x': 0.5,
+            'xanchor': 'center',
+            'yanchor': 'top' 
+        },
         xaxis_title='Monthly',
         yaxis_title=''
     )
