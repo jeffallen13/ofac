@@ -279,6 +279,7 @@ class OFACProcessor:
         ]
         
         # Create panel dates/countries
+        # Note: using Rep_date assumes there is activity for every month
         dates_df = pd.DataFrame({'Date': sorted(data['Rep_date'].unique())})
 
         countries_df = pd.DataFrame(
