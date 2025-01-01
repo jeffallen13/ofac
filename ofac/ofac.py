@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-# from typing import Optional
 
 import pandas as pd
 import numpy as np
@@ -84,7 +83,8 @@ class OFACProcessor:
         pd.DataFrame
             Cleaned dataframe with proper column names and types
         """
-        df = pd.read_csv(url, names=columns)
+        df = pd.read_csv(url, names=columns, 
+                         storage_options = {'User-Agent': 'Mozilla/5.0'})
         # Remove placeholder lines at end; filter second column
         df = df[~pd.isna(df[columns[1]])]  
         df['Ent_num'] = pd.to_numeric(df['Ent_num'])
