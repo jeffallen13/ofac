@@ -1,6 +1,6 @@
 '''
 Downloads and processes OFAC sanctions data at the end of each month
-Last updated: 4/30/2025
+Last updated: 5/31/2025
 '''
 
 from ofac import OFACProcessor
