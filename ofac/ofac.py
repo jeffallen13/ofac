@@ -260,7 +260,8 @@ class OFACProcessor:
         """
         # First get distinct entity-country records using add_date
         base_records = (data[['Ent_num', 'Country', 'add_date', 'removal_date']]
-                        .drop_duplicates())
+                        .drop_duplicates()
+                        .copy())
         
         '''
         Consolidate West Bank and Gaza, using World Bank convention to 
