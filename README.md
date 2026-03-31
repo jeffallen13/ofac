@@ -2,7 +2,7 @@
 
 A Python system for managing OFAC sanctions data on a monthly basis. The system is particularly suited for research applications, providing historical tracking of sanctions and a monthly panel dataset for analysis. It is not designed for sanctions screening. 
 
-Data collection began in April 2022. The data are updated at the end of each month.  
+Data collection began in April 2022 and ended in March 2026, providing a monthly panel for four years.  
 
 ## Data Outputs
 
@@ -56,7 +56,7 @@ from ofac import plot_ofac_series
 
 plot_ofac_series(panel, country='Russia', var='levels')
 ```
-![Line Plot](images/ofac_russia.png)
+![Line Plot](images/ofac_russia_series.png)
 
 Finally, users can run the Dash application `app.py` to explore the panel interactively:
 
